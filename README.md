@@ -7,7 +7,7 @@ Visit my youtube : https://www.youtube.com/c/HelloWorld-Raven/featured
 
 ## Method
 + public void now();
- Set time picker to current time now
+ - Set time picker to current time now
 + public String getSelectedTime();
- Get time picker selected
+ - Get time picker selected
 
