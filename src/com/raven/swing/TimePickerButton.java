@@ -62,6 +62,7 @@ public class TimePickerButton extends JButton {
             }
         };
         animator = new Animator(400, target);
+        animator.setResolution(0);
     }
 
     @Override

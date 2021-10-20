@@ -122,6 +122,7 @@ public class TimeComponent extends JComponent {
             }
         };
         animator = new Animator(200, target);
+        animator.setResolution(0);
     }
 
     private void checkMouseSelect(MouseEvent me) {
