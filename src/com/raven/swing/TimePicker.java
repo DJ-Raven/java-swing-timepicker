@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JPopupMenu;
@@ -17,11 +18,13 @@ import javax.swing.SwingUtilities;
 
 public class TimePicker extends javax.swing.JPanel {
 
-    private final SimpleDateFormat format = new SimpleDateFormat("hh:mm aa");
+    private final SimpleDateFormat formatampm = new SimpleDateFormat("hh:mm aa");
+    private final SimpleDateFormat format24h = new SimpleDateFormat("HH:mm");
     private final DecimalFormat numberFormat = new DecimalFormat("00");
     private JTextField displayText;
     private List<EventTimePicker> events;
     private JPopupMenu menu;
+    private SimpleDateFormat format = formatampm;
 
     public TimePicker() {
         initComponents();
@@ -31,6 +34,7 @@ public class TimePicker extends javax.swing.JPanel {
     private void init() {
         events = new ArrayList<>();
         now();
+        panel.setVisible(!jCB24hour.isSelected());
         EventTimeSelected event = new EventTimeSelected() {
             @Override
             public void hourSelected(int hour) {
@@ -78,7 +82,10 @@ public class TimePicker extends javax.swing.JPanel {
 
     private void displayOnText() {
         if (displayText != null) {
-            displayText.setText(cmdHour.getText() + ":" + cmdMinute.getText() + " " + (cmdAM.getForeground() == Color.WHITE ? "AM" : "MP"));
+            if (jCB24hour.isSelected())
+                displayText.setText(cmdHour.getText() + ":" + cmdMinute.getText() );
+            else
+                displayText.setText(cmdHour.getText() + ":" + cmdMinute.getText() + " " + (cmdAM.getForeground() == Color.WHITE ? "AM" : "PM"));
         }
     }
 
@@ -97,6 +104,7 @@ public class TimePicker extends javax.swing.JPanel {
         timeComponent = new com.raven.swing.TimeComponent();
         cmdOK = new com.raven.swing.TimePickerButton();
         cmdCancel = new com.raven.swing.TimePickerButton();
+        jCB24hour = new javax.swing.JCheckBox();
 
         setBackground(new java.awt.Color(255, 255, 255));
 
@@ -243,6 +251,13 @@ public class TimePicker extends javax.swing.JPanel {
             }
         });
 
+        jCB24hour.setText("24hour");
+        jCB24hour.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCB24hourActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -250,7 +265,9 @@ public class TimePicker extends javax.swing.JPanel {
             .addComponent(timeComponent, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(header, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
+                .addComponent(jCB24hour)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(cmdCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cmdOK, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -262,10 +279,11 @@ public class TimePicker extends javax.swing.JPanel {
                 .addComponent(header, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(15, 15, 15)
                 .addComponent(timeComponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(15, 15, 15)
+                .addGap(13, 13, 13)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cmdOK, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cmdCancel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cmdCancel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jCB24hour))
                 .addGap(10, 10, 10))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -315,6 +333,12 @@ public class TimePicker extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_headerMouseDragged
 
+    private void jCB24hourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCB24hourActionPerformed
+        panel.setVisible(!jCB24hour.isSelected());        
+        timeComponent.set24hour(jCB24hour.isSelected());
+        timeComponent.repaint();
+    }//GEN-LAST:event_jCB24hourActionPerformed
+
     @Override
     public void setForeground(Color color) {
         super.setForeground(color);
@@ -359,6 +383,15 @@ public class TimePicker extends javax.swing.JPanel {
         return cmdHour.getText() + ":" + cmdMinute.getText() + " " + (cmdAM.getForeground() == Color.WHITE ? "AM" : "PM");
     }
 
+    public Date getSelectedDate() {
+        Calendar c = Calendar.getInstance();
+        
+        c.set(Calendar.HOUR_OF_DAY, Integer.valueOf(cmdHour.getText()));
+        c.set(Calendar.MINUTE, Integer.valueOf(cmdMinute.getText()));
+        
+        return c.getTime();
+    }
+
     private void runEvent() {
         for (EventTimePicker event : events) {
             event.timeSelected(getSelectedTime());
@@ -373,6 +406,12 @@ public class TimePicker extends javax.swing.JPanel {
         cmdOK.addActionListener(event);
     }
 
+    public void set24hourMode(boolean value) {
+        jCB24hour.setVisible(false);
+        jCB24hour.setSelected(value);
+        format = (value ? format24h : formatampm);
+    }
+    
     public void showPopup(Component com, int x, int y) {
         if (menu == null) {
             menu = new TimePickerMenu();
@@ -390,6 +429,7 @@ public class TimePicker extends javax.swing.JPanel {
     private com.raven.swing.TimePickerButton cmdOK;
     private com.raven.swing.TimePickerButton cmdPM;
     private javax.swing.JPanel header;
+    private javax.swing.JCheckBox jCB24hour;
     private com.raven.swing.TimePickerLabel lbSplit;
     private javax.swing.JPanel panel;
     private javax.swing.JPanel panelHeader;
