@@ -369,7 +369,9 @@ public class TimePicker extends javax.swing.JPanel {
         String now = format.format(date);
         int hour = Integer.valueOf(now.split(":")[0]);
         int minute = Integer.valueOf(now.split(":")[1].split(" ")[0]);
-        changeAM(now.split(" ")[1].equals("AM"));
+        if (format.equals(formatampm)) {
+            changeAM(now.split(" ")[1].equals("AM"));
+        }
         cmdHour.setText(numberFormat.format(hour));
         cmdMinute.setText(numberFormat.format(minute));
         timeComponent.setSelectedHour(hour, minute);
