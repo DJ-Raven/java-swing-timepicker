@@ -412,6 +412,9 @@ public class TimePicker extends javax.swing.JPanel {
         jCB24hour.setVisible(false);
         jCB24hour.setSelected(value);
         format = (value ? format24h : formatampm);
+        panel.setVisible(!value);
+        timeComponent.set24hour(value);
+        timeComponent.repaint();
     }
     
     public void showPopup(Component com, int x, int y) {
