@@ -15,6 +15,7 @@ public void setSelectedTime(Date date); | set time picker selected time to speci
 public void addEventTimePicker(EventTimePicker event); | this event run when time selected change
 public void addActionListener(ActionListener event); | this event run when time picker is current show popup and user click ok
 public void showPopup(Component com, int x, int y); | to popup time picker
+public void set24hourMode(boolean value); | value true for 24 hour mode
 <br/>
 Support me by subscribe youtube channel
 <hr/>
